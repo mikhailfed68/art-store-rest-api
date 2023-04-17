@@ -1,0 +1,17 @@
+__pycache__
+*.pyc
+dump.rdb
+
+static
+media
+staticdocker
+mediadocker
+
+*.env*
+/env
+venv/
+.venv/
+
+.Dockerfile
+.docker-compose.yml
+.dockerignore
