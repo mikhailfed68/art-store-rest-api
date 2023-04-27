@@ -9,8 +9,12 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-
+import os
+import json
 from pathlib import Path
+
+import dj_database_url
+from oscar.defaults import *
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -19,14 +23,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-l(fc-+!+01j++q4kktcp)f6%lg2j_n6-jl*af(t4ei#5=egmva'
+SECRET_KEY = os.getenv("SECRET_KEY")
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = json.loads(os.getenv("DEBUG", "false"))
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = os.getenv(
+    "ALLOWED_HOSTS",
+    "127.0.0.1 .localhost [::1]",
+).split(" ")
 
 # Application definition
 
@@ -37,7 +41,58 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'django.contrib.sites',
+    'django.contrib.flatpages',
+
+    'rest_framework',
+    'oscarapi',
+
+    'oscar.config.Shop',
+    'oscar.apps.analytics.apps.AnalyticsConfig',
+    'oscar.apps.checkout.apps.CheckoutConfig',
+    'oscar.apps.address.apps.AddressConfig',
+    'oscar.apps.shipping.apps.ShippingConfig',
+    'oscar.apps.catalogue.apps.CatalogueConfig',
+    'oscar.apps.catalogue.reviews.apps.CatalogueReviewsConfig',
+    'oscar.apps.communication.apps.CommunicationConfig',
+    'oscar.apps.partner.apps.PartnerConfig',
+    'oscar.apps.basket.apps.BasketConfig',
+    'oscar.apps.payment.apps.PaymentConfig',
+    'oscar.apps.offer.apps.OfferConfig',
+    'oscar.apps.order.apps.OrderConfig',
+    'oscar.apps.customer.apps.CustomerConfig',
+    'oscar.apps.search.apps.SearchConfig',
+    'oscar.apps.voucher.apps.VoucherConfig',
+    'oscar.apps.wishlists.apps.WishlistsConfig',
+    'oscar.apps.dashboard.apps.DashboardConfig',
+    'oscar.apps.dashboard.reports.apps.ReportsDashboardConfig',
+    'oscar.apps.dashboard.users.apps.UsersDashboardConfig',
+    'oscar.apps.dashboard.orders.apps.OrdersDashboardConfig',
+    'oscar.apps.dashboard.catalogue.apps.CatalogueDashboardConfig',
+    'oscar.apps.dashboard.offers.apps.OffersDashboardConfig',
+    'oscar.apps.dashboard.partners.apps.PartnersDashboardConfig',
+    'oscar.apps.dashboard.pages.apps.PagesDashboardConfig',
+    'oscar.apps.dashboard.ranges.apps.RangesDashboardConfig',
+    'oscar.apps.dashboard.reviews.apps.ReviewsDashboardConfig',
+    'oscar.apps.dashboard.vouchers.apps.VouchersDashboardConfig',
+    'oscar.apps.dashboard.communications.apps.CommunicationsDashboardConfig',
+    'oscar.apps.dashboard.shipping.apps.ShippingDashboardConfig',
+
+    # 3rd-party apps that oscar depends on
+    'widget_tweaks',
+    'haystack',
+    'treebeard',
+    'sorl.thumbnail',   # Default thumbnail backend, can be replaced
+    'django_tables2',
+
+    # my specific apps
+    "django_filters",
+    "storages",
+    "django_cleanup.apps.CleanupConfig",
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -47,7 +102,21 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'oscar.apps.basket.middleware.BasketMiddleware',
+    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
 ]
+
+AUTHENTICATION_BACKENDS = (
+    'oscar.apps.customer.auth_backends.EmailBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
+    },
+}
 
 ROOT_URLCONF = 'config.urls'
 
@@ -62,6 +131,10 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'oscar.apps.search.context_processors.search_form',
+                'oscar.apps.checkout.context_processors.checkout',
+                'oscar.apps.communication.notifications.context_processors.notifications',
+                'oscar.core.context_processors.metadata',
             ],
         },
     },
@@ -71,15 +144,30 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    "default": dj_database_url.config(
+        default=DATABASE_URL,
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 }
 
+DATABASES['default']['ATOMIC_REQUESTS'] = True
+
+
+# Cache settings
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": os.getenv('REDIS_URL'),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -103,9 +191,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "ru"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "Europe/Moscow"
 
 USE_I18N = True
 
@@ -114,12 +202,70 @@ USE_L10N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.2/howto/static-files/
-
-STATIC_URL = '/static/'
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/4.1/howto/static-files/
+# Yandex S3 API
+# https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html
+# https://cloud.yandex.com/en/docs/storage/s3/
+ENABLED_YANDEX_STORAGE = json.loads(os.getenv("ENABLED_YANDEX_STORAGE", "false"))
+
+if ENABLED_YANDEX_STORAGE:
+    AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+
+    AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+
+    AWS_DEFAULT_ACL = "public-read"
+
+    AWS_S3_ENDPOINT_URL = os.getenv("AWS_S3_ENDPOINT_URL")
+
+    AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME")
+
+    YANDEX_OBJECT_STORAGE_BUCKET_NAME = os.getenv("YANDEX_OBJECT_STORAGE_BUCKET_NAME")
+
+    YANDEX_S3_DOMAIN = os.getenv("YANDEX_S3_DOMAIN")
+
+    AWS_S3_CUSTOM_DOMAIN = f"{YANDEX_OBJECT_STORAGE_BUCKET_NAME}{YANDEX_S3_DOMAIN}"
+
+    # S3 static settings
+    STATIC_LOCATION = "static"
+
+    STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{STATIC_LOCATION}/"
+
+    STATICFILES_STORAGE = "common.custom_storage.StaticYandexCloudStorage"
+
+    # S3 public media settings
+    PUBLIC_MEDIA_LOCATION = "media"
+
+    MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/"
+
+    DEFAULT_FILE_STORAGE = "common.custom_storage.MediaYandexCloudStorage"
+else:
+    NAME_STATIC_DIR = os.getenv("NAME_STATIC_DIR", "static")
+
+    STATIC_ROOT = BASE_DIR / NAME_STATIC_DIR
+
+    STATIC_URL = f"{NAME_STATIC_DIR}/"
+
+    NAME_MEDIA_DIR = os.getenv("NAME_MEDIA_DIR", "media")
+
+    MEDIA_ROOT = BASE_DIR / NAME_MEDIA_DIR
+
+    MEDIA_URL = f"{NAME_MEDIA_DIR}/"
+
+
+OSCAR_INITIAL_ORDER_STATUS = 'На рассмотрении'
+
+OSCAR_INITIAL_LINE_STATUS = 'На рассмотрении'
+
+OSCAR_ORDER_STATUS_PIPELINE = {
+    'На рассмотрении': ('Обрабатывается', 'Закрыт',),
+    'Обрабатывается': ('Обработанн', 'Закрыт',),
+    'Закрыт': (),
+}
