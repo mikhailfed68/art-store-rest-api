@@ -11,10 +11,17 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
 import json
+import socket
 from pathlib import Path
 
 import dj_database_url
+from rest_framework.reverse import reverse_lazy
+from dotenv import load_dotenv
+
+
 from oscar.defaults import *
+
+load_dotenv('.env.dev')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -41,6 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'debug_toolbar',
 
     'django.contrib.sites',
     'django.contrib.flatpages',
@@ -48,15 +56,16 @@ INSTALLED_APPS = [
     'rest_framework',
     'oscarapi',
 
-    'oscar.config.Shop',
+    # core apps
+    'custom_apps.oscar.apps.Shop',
     'oscar.apps.analytics.apps.AnalyticsConfig',
     'oscar.apps.checkout.apps.CheckoutConfig',
     'oscar.apps.address.apps.AddressConfig',
     'oscar.apps.shipping.apps.ShippingConfig',
-    'oscar.apps.catalogue.apps.CatalogueConfig',
+    'custom_apps.catalogue.apps.CatalogueConfig',
     'oscar.apps.catalogue.reviews.apps.CatalogueReviewsConfig',
     'oscar.apps.communication.apps.CommunicationConfig',
-    'oscar.apps.partner.apps.PartnerConfig',
+    'custom_apps.partner.apps.PartnerConfig',
     'oscar.apps.basket.apps.BasketConfig',
     'oscar.apps.payment.apps.PaymentConfig',
     'oscar.apps.offer.apps.OfferConfig',
@@ -65,11 +74,12 @@ INSTALLED_APPS = [
     'oscar.apps.search.apps.SearchConfig',
     'oscar.apps.voucher.apps.VoucherConfig',
     'oscar.apps.wishlists.apps.WishlistsConfig',
-    'oscar.apps.dashboard.apps.DashboardConfig',
+    # dashboard apps
+    'custom_apps.dashboard.apps.DashboardConfig',
     'oscar.apps.dashboard.reports.apps.ReportsDashboardConfig',
     'oscar.apps.dashboard.users.apps.UsersDashboardConfig',
     'oscar.apps.dashboard.orders.apps.OrdersDashboardConfig',
-    'oscar.apps.dashboard.catalogue.apps.CatalogueDashboardConfig',
+    'custom_apps.dashboard.catalogue.apps.CatalogueDashboardConfig',
     'oscar.apps.dashboard.offers.apps.OffersDashboardConfig',
     'oscar.apps.dashboard.partners.apps.PartnersDashboardConfig',
     'oscar.apps.dashboard.pages.apps.PagesDashboardConfig',
@@ -87,24 +97,50 @@ INSTALLED_APPS = [
     'django_tables2',
 
     # my specific apps
+    "corsheaders",
     "django_filters",
-    "storages",
-    "django_cleanup.apps.CleanupConfig",
+    'storages',
+    'django_cleanup.apps.CleanupConfig',
+
+    # my own apps
+    'authors',
 ]
+
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'middleware.HeaderSessionMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # 'oscarapi.middleware.ApiGatewayMiddleWare',
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'middleware.NotFoundMiddleware',
+    'middleware.SetUserResponseMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
     'oscar.apps.basket.middleware.BasketMiddleware',
+    # 'oscarapi.middleware.ApiBasketMiddleWare',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
+]
+
+LOGIN_URL = '/dashboard/login/'
+
+OSCAR_HOMEPAGE = reverse_lazy('api-root')
+
+NOT_FOUND_IGNORE_PATHS = [
+    r'/',
+    r'/dashboard/login/',
+    r'^/api/.*$',
+    r'^/media/.*$',
+    r'^/static/.*$',
+    r'^/__debug__/.*$',
 ]
 
 AUTHENTICATION_BACKENDS = (
@@ -120,10 +156,15 @@ HAYSTACK_CONNECTIONS = {
 
 ROOT_URLCONF = 'config.urls'
 
+import os
+location = lambda x: os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', x)
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            location('templates'), # templates directory of the project  
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -260,6 +301,12 @@ else:
     MEDIA_URL = f"{NAME_MEDIA_DIR}/"
 
 
+# Setting for django-debug-tool-bar
+if DEBUG:
+    hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+    INTERNAL_IPS = [f"{ip[:-1]}1" for ip in ips] + ["127.0.0.1"]
+
+
 OSCAR_INITIAL_ORDER_STATUS = 'На рассмотрении'
 
 OSCAR_INITIAL_LINE_STATUS = 'На рассмотрении'
@@ -269,3 +316,78 @@ OSCAR_ORDER_STATUS_PIPELINE = {
     'Обрабатывается': ('Обработанн', 'Закрыт',),
     'Закрыт': (),
 }
+
+OSCAR_DEFAULT_CURRENCY = 'RUB'
+
+OSCAR_ALLOW_ANON_CHECKOUT = True
+
+OSCARAPI_ENABLE_REGISTRATION = False
+
+OSCARAPI_OVERRIDE_MODULES = ["authors.customapi"]
+
+OSCARAPI_PRODUCT_FIELDS = [
+    "url",
+    "id",
+    "title",
+    "author",
+    "attributes",
+    "categories",
+    "product_class",
+    "images",
+    "availability",
+    "price",
+]
+
+OSCARAPI_PRODUCTDETAIL_FIELDS = [
+    "url",
+    "id",
+    "upc",
+    "title",
+    "author",
+    "description",
+    "structure",
+    "date_created",
+    "date_updated",
+    "recommended_products",
+    "attributes",
+    "categories",
+    "product_class",
+    "images",
+    "price",
+    "availability",
+    "stockrecords",
+    "options",
+    "children",
+]
+
+OSCAR_ALLOW_ANON_REVIEWS = False
+
+OSCAR_REQUIRED_ADDRESS_FIELDS = ('first_name', 'last_name', 'line1', 'line4', 'country')
+
+
+OSCARAPI_USERADDRESS_FIELDS = [
+    "id",
+    "url",
+    "first_name",
+    "last_name",
+    "line1",
+    "line2",
+    "country",
+    "state",
+    "search_text",
+    "phone_number",
+    "notes",
+    "is_default_for_shipping",
+    "is_default_for_billing",
+]
+
+OSCAR_BASKET_COOKIE_LIFETIME = 3600
+
+OSCAR_MAX_BASKET_QUANTITY_THRESHOLD = 10
+
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:3000",
+    "https://127.0.0.1:3000",
+    "http://localhost:3000",
+    "https://localhost:3000",
+]

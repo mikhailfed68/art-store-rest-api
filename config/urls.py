@@ -20,16 +20,20 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('i18n/', include('django.conf.urls.i18n')),
-
     # The Django admin is not officially supported; expect breakage.
     # Nonetheless, it's often useful for debugging.
     path('admin/', admin.site.urls),
-
-    path("api/", include("oscarapi.urls")),
+    
     path('', include(apps.get_app_config('oscar').urls[0])),
+
+    # the same endpoints to give priority to the custom api_root view
+    path('api/', include('authors.urls')), 
+    path('api/', include('oscarapi.urls')),
 ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += [
+    path('__debug__/', include('debug_toolbar.urls')),
+    ]
