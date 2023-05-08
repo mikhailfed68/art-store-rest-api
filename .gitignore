@@ -12,9 +12,7 @@ mediadocker
 venv/
 .venv/
 
-.Dockerfile
-.docker-compose.yml
-.dockerignore
-.vscode/
 Dockerfile
 docker-compose.yml
+.dockerignore
+.vscode/
