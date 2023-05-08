@@ -141,6 +141,8 @@ NOT_FOUND_IGNORE_PATHS = [
     r'^/media/.*$',
     r'^/static/.*$',
     r'^/__debug__/.*$',
+    r'^/openapi/.*$',
+    r'^/swagger-ui/.*$',
 ]
 
 AUTHENTICATION_BACKENDS = (
@@ -391,3 +393,5 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "https://localhost:3000",
 ]
+
+OSCARAPI_BLOCK_ADMIN_API_ACCESS = True

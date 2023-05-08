@@ -18,17 +18,34 @@ from django.urls import include, path
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.generic import TemplateView
+
+from rest_framework.schemas import get_schema_view
+
+schema_view = get_schema_view(
+        title="Art-Vostorge Store Api",
+        description="API for common functionality",
+        version="1.0.0",
+    )
+
+swagger_view = TemplateView.as_view(
+    template_name='swagger-ui.html',
+    extra_context={'schema_url':'openapi-schema'}
+    )
 
 urlpatterns = [
-    # The Django admin is not officially supported; expect breakage.
-    # Nonetheless, it's often useful for debugging.
-    path('admin/', admin.site.urls),
-    
     path('', include(apps.get_app_config('oscar').urls[0])),
 
     # the same endpoints to give priority to the custom api_root view
-    path('api/', include('authors.urls')), 
+    path('api/', include('authors.urls')),
     path('api/', include('oscarapi.urls')),
+
+    path('openapi/', schema_view, name='openapi-schema'),
+    path('swagger-ui/', swagger_view, name='swagger-ui'),
+
+    # The Django admin is not officially supported; expect breakage.
+    # Nonetheless, it's often useful for debugging.
+    path('admin/', admin.site.urls),
 ]
 
 if settings.DEBUG:
