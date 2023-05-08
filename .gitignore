@@ -16,3 +16,5 @@ venv/
 .docker-compose.yml
 .dockerignore
 .vscode/
+Dockerfile
+docker-compose.yml
