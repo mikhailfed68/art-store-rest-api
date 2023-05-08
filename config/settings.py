@@ -151,7 +151,6 @@ LOGOUT_REDIRECT_URL = "/"
 ROOT_URLCONF = 'config.urls'
 
 NOT_FOUND_IGNORE_PATHS = [
-    r'/',
     r'/dashboard/login/',
     r'^/api/.*$',
     r'^/media/.*$',
@@ -268,7 +267,7 @@ OSCARAPI_OVERRIDE_MODULES = ["authors.customapi"]
 # Display Oscar settings
 OSCAR_SHOP_NAME = 'Art-Vostorg Store'
 
-OSCAR_HOMEPAGE = reverse_lazy('api-root')
+# OSCAR_HOMEPAGE = reverse_lazy('api-root')
 
 OSCAR_RECENTLY_VIEWED_PRODUCTS = json.loads(os.getenv("OSCAR_RECENTLY_VIEWED_PRODUCTS", '10'))
 
