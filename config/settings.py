@@ -48,9 +48,8 @@ CORS_ALLOWED_ORIGINS = json.loads(os.getenv(
 
 # Setting for django-debug-tool-bar
 if DEBUG:
-    hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
-    INTERNAL_IPS = [f"{ip[:-1]}1" for ip in ips] + ["127.0.0.1"]
-
+    hostname, aliaslist, ipaddrlist = socket.gethostbyname_ex(socket.gethostname())
+    INTERNAL_IPS = [f"{ip[:-1]}1" for ip in ipaddrlist] + ["127.0.0.1"]
 
 # Application definition
 
@@ -67,7 +66,7 @@ INSTALLED_APPS = [
     'django.contrib.flatpages',
 
     'rest_framework',
-    'oscarapi',
+    'authors.customapi.apps.OscarAPIConfig',
 
     # core apps
     'custom_apps.oscar.apps.Shop',
@@ -277,16 +276,17 @@ OSCAR_RECENTLY_VIEWED_COOKIE_LIFETIME = json.loads(os.getenv('OSCAR_RECENTLY_VIE
 
 
 # Order Oscar settings
+OSCARAPI_INITIAL_ORDER_STATUS = 'На рассмотрении'
+
 OSCAR_INITIAL_ORDER_STATUS = 'На рассмотрении'
 
 OSCAR_INITIAL_LINE_STATUS = 'На рассмотрении'
 
 OSCAR_ORDER_STATUS_PIPELINE = {
-    'На рассмотрении': ('Обрабатывается', 'Закрыт',),
-    'Обрабатывается': ('Обработанн', 'Закрыт',),
+    'На рассмотрении': ('Обрабатывается',),
+    'Обрабатывается': ('Обработан', 'Закрыт',),
     'Закрыт': (),
 }
-
 
 # Checkout Oscar settings
 OSCAR_OFFERS_INCL_TAX = True
@@ -300,6 +300,7 @@ OSCAR_REQUIRED_ADDRESS_FIELDS = [
     'line2',
     'country'
 ]
+
 
 # Review Oscar settings
 OSCAR_ALLOW_ANON_REVIEWS = False
@@ -381,9 +382,9 @@ OSCARAPI_USERADDRESS_FIELDS = [
 # Communication Oscar settings
 OSCAR_SEND_REGISTRATION_EMAIL = json.loads(os.getenv('OSCAR_SEND_REGISTRATION_EMAIL', 'false'))
 
-OSCAR_FROM_EMAIL = os.getenv('OSCAR_FROM_EMAIL', 'oscar@example.com')
-
 OSCAR_SAVE_SENT_EMAILS_TO_DB = json.loads(os.getenv('OSCAR_SAVE_SENT_EMAILS_TO_DB', 'true'))
+
+OSCAR_FROM_EMAIL = os.getenv('OSCAR_FROM_EMAIL', 'oscar@example.com')
 
 
 # Setting Email configuration for sending reset or error email
