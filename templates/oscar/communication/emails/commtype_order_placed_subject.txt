@@ -1,0 +1,1 @@
+{% load i18n %}Vostorg Store {% blocktrans with number=order.number %}Confirmation of order {{ number }}{% endblocktrans %}
