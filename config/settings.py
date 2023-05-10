@@ -40,10 +40,12 @@ CSRF_TRUSTED_ORIGINS = os.getenv(
     "http://127.0.0.1 http://localhost",
     ).split(" ")
 
-CORS_ALLOWED_ORIGINS = os.getenv(
-    'CORS_ALLOWED_ORIGINS',
-    "http://localhost:3000"
-    ).split(" ")
+# CORS_ALLOWED_ORIGINS = os.getenv(
+#     'CORS_ALLOWED_ORIGINS',
+#     "http://localhost:3000"
+#     ).split(" ")
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 # Setting for django-debug-tool-bar
 if DEBUG:
