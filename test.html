@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Пример использования XMLHttpRequest</title>
+</head>
+<body>
+
+	<h1>Список продуктов:</h1>
+
+	<ul id="productList"></ul>
+
+	<script>
+		// Создаем объект XMLHttpRequest
+		var xhr = new XMLHttpRequest();
+
+		// Устанавливаем метод запроса и URL-адрес API
+		xhr.open('OPTION', 'http://localhost:8000/api/basket/add-product/', true);
+
+		// Обработчик события изменения состояния запроса
+		xhr.onreadystatechange = function() {
+			if (this.readyState === 4 && this.status === 200) {
+				// Получаем ответ в формате JSON
+				var products = JSON.parse(this.responseText);
+
+				// Выводим список продуктов на страницу
+				var productList = document.getElementById('productList');
+				products.forEach(function(product) {
+					var li = document.createElement('li');
+					li.textContent = product.name;
+					productList.appendChild(li);
+				});
+			}
+		};
+
+		// Отправляем запрос на сервер
+		xhr.send();
+	</script>
+
+</body>
+</html>

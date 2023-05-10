@@ -26,20 +26,21 @@ class HeaderSessionMiddleware(IsApiRequest):
 
         response = self._get_response(request)
 
-        if self.is_api_request(request) and response.user.is_anonymous:
-            # получаем Set-Cookie (установленную в SessionMiddleware)
-            # и значение sessionid
-            set_cookie_object = response.cookies.get('sessionid')
-            if set_cookie_object:
-                session_id = set_cookie_object.value
+        if  request.method != 'OPTIONS':
+            if self.is_api_request(request) and response.user.is_anonymous:
+                # получаем Set-Cookie (установленную в SessionMiddleware)
+                # и значение sessionid
+                set_cookie_object = response.cookies.get('sessionid')
+                if set_cookie_object:
+                    session_id = set_cookie_object.value
 
-                # устанавливаем заголовок в ответе и удаляем куку
-                response.headers['Session-Id'] = session_id
-                response.delete_cookie('sessionid')
-            return response
+                    # устанавливаем заголовок в ответе и удаляем куку
+                    response.headers['Session-Id'] = session_id
+                    response.delete_cookie('sessionid')
+                return response
         return response
 
-
+ 
 class SetUserResponseMiddleware(IsApiRequest):
     def __init__(self, get_response) -> None:
         self._get_response = get_response
