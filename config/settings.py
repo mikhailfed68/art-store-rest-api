@@ -45,7 +45,9 @@ CSRF_TRUSTED_ORIGINS = os.getenv(
 #     "http://localhost:3000"
 #     ).split(" "))
 
-CORS_ALLOWED_ORIGINS = ['http://localhost', 'http://localhost:3000']
+# CORS_ALLOWED_ORIGINS = ['http://localhost:3000']
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 # Setting for django-debug-tool-bar
 if DEBUG:
@@ -122,13 +124,13 @@ INSTALLED_APPS = [
 SITE_ID = 1
 
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'middleware.HeaderSessionMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     # "django.middleware.http.ConditionalGetMiddleware",
     # 'oscarapi.middleware.ApiGatewayMiddleWare',
     "debug_toolbar.middleware.DebugToolbarMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
