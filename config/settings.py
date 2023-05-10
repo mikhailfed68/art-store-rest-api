@@ -40,10 +40,7 @@ CSRF_TRUSTED_ORIGINS = os.getenv(
     "http://127.0.0.1 http://localhost",
     ).split(" ")
 
-CORS_ALLOWED_ORIGINS = json.loads(os.getenv(
-    'CORS_ALLOWED_ORIGINS',
-    '["http://127.0.0.1:3000", "https://127.0.0.1:3000", "http://localhost:3000", "https://localhost:3000"]'
-    ))
+CORS_ALLOWED_ORIGINS = json.loads(os.getenv('CORS_ALLOWED_ORIGINS', '["http://localhost:3000"]' ))
 
 
 # Setting for django-debug-tool-bar
@@ -66,6 +63,7 @@ INSTALLED_APPS = [
     'django.contrib.flatpages',
 
     'rest_framework',
+    "corsheaders",
     'authors.customapi.apps.OscarAPIConfig',
 
     # core apps
@@ -109,7 +107,6 @@ INSTALLED_APPS = [
     'django_tables2',
 
     # my specific apps
-    "corsheaders",
     "django_filters",
     'storages',
     'django_cleanup.apps.CleanupConfig',
