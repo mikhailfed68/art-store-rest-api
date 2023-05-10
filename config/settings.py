@@ -55,7 +55,7 @@ if DEBUG:
 # Application definition
 
 INSTALLED_APPS = [
-    # "corsheaders",
+    "corsheaders",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -122,13 +122,13 @@ INSTALLED_APPS = [
 SITE_ID = 1
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'middleware.HeaderSessionMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     # "django.middleware.http.ConditionalGetMiddleware",
     # 'oscarapi.middleware.ApiGatewayMiddleWare',
     "debug_toolbar.middleware.DebugToolbarMiddleware",
-    # "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
