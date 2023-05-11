@@ -303,8 +303,6 @@ OSCAR_REQUIRED_ADDRESS_FIELDS = [
     'country'
 ]
 
-
-
 OSCARAPI_ORDER_FIELDS = [
     "number",
     "basket",
@@ -362,8 +360,8 @@ OSCARAPI_PRODUCT_FIELDS = [
     "categories",
     "product_class",
     "images",
-    "availability",
     "price",
+    "availability",
 ]
 
 OSCARAPI_PRODUCTDETAIL_FIELDS = [
