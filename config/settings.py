@@ -304,6 +304,30 @@ OSCAR_REQUIRED_ADDRESS_FIELDS = [
 ]
 
 
+
+OSCARAPI_ORDER_FIELDS = [
+    "number",
+    "basket",
+    "owner",
+    "billing_address",
+    "currency",
+    "total_incl_tax",
+    "total_excl_tax",
+    "shipping_incl_tax",
+    "shipping_excl_tax",
+    "shipping_address",
+    "shipping_method",
+    "shipping_code",
+    "status",
+    "email",
+    "date_placed",
+    "payment_url",
+    "offer_discounts",
+    "voucher_discounts",
+    "surcharges"      
+]
+
+
 # Review Oscar settings
 OSCAR_ALLOW_ANON_REVIEWS = False
 
