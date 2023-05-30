@@ -131,6 +131,7 @@ INSTALLED_APPS = [
     "django_filters",
     'storages',
     'django_cleanup.apps.CleanupConfig',
+    'sorl_thumbnail_serializer',
 
     # my own apps
     'authors',

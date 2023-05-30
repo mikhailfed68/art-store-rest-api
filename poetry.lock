@@ -1011,6 +1011,23 @@ files = [
 ]
 
 [[package]]
+name = "sorl-thumbnail-serializer-field"
+version = "0.2.1"
+description = "An image serializer field for use with sorl and Django REST Framework."
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "sorl-thumbnail-serializer-field-0.2.1.tar.gz", hash = "sha256:905a05a81e83bceb9c49392010802981a7d8100478cc67ef4acfb53beb1ab505"},
+    {file = "sorl_thumbnail_serializer_field-0.2.1-py2.py3-none-any.whl", hash = "sha256:6f4adb757d798c3cd556668333c83dc17926dd6bea420dff293fb35ec170e03e"},
+]
+
+[package.dependencies]
+Django = ">=1.5.0"
+djangorestframework = ">=3.2.3"
+sorl-thumbnail = ">=12.3"
+
+[[package]]
 name = "sqlparse"
 version = "0.4.3"
 description = "A non-validating SQL parser."
@@ -1078,4 +1095,4 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "5d85ae0e9ae3e4baf50e99e2c14891d123065ac270101afd9006d8f91711a87f"
+content-hash = "652e26d7db46c769fc5a40d10c5e5a3e1af304fca00707e787ba7ad5ccec3f72"
