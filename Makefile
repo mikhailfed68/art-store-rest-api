@@ -14,7 +14,7 @@ start:
 	poetry run python3 manage.py runserver
 
 start-in-docker:
-	sleep 3
+	sleep 1
 	python3 -m manage runserver 0.0.0.0:8000
 
 shell:
