@@ -47,6 +47,8 @@ CSRF_TRUSTED_ORIGINS = os.getenv(
 
 CORS_ALLOW_ALL_ORIGINS = True
 
+CORS_ALLOW_HEADERS += ("Session-Id",)
+
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # Setting for django-debug-tool-bar
