@@ -58,6 +58,8 @@ CORS_ALLOW_HEADERS = (
     "session-id",
 )
 
+CORS_EXPOSE_HEADERS = ("Session-Id", "session-id")
+
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # Setting for django-debug-tool-bar
