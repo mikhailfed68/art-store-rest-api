@@ -140,6 +140,7 @@ SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'oscarapi.middleware.ApiGatewayMiddleWare',
     'middleware.HeaderSessionMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     # "django.middleware.http.ConditionalGetMiddleware",
