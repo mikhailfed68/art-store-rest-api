@@ -15,7 +15,6 @@ import os
 from pathlib import Path
 
 import dj_database_url
-from rest_framework.reverse import reverse_lazy
 from dotenv import load_dotenv
 
 from oscar.defaults import *
@@ -144,8 +143,7 @@ MIDDLEWARE = [
     'oscarapi.middleware.ApiGatewayMiddleWare',
     'middleware.HeaderSessionMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    # "django.middleware.http.ConditionalGetMiddleware",
-    # 'oscarapi.middleware.ApiGatewayMiddleWare',
+    "django.middleware.http.ConditionalGetMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
