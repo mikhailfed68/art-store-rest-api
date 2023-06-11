@@ -13,4 +13,7 @@ class Product(AbstractProduct):
     )
 
 
+# import at the end of the file allows the classes
+# specified above to be instantiated correctly.
+# this crutch was dictade by django-oscar docs
 from oscar.apps.catalogue.models import *  # noqa isort:skip
