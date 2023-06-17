@@ -1,7 +1,7 @@
 from django.http import Http404
 from django.conf import settings
 from django.urls import reverse
-from django.http import HttpResponse
+from rest_framework.response import Response
 
 from common.utlis import array_has_regex
 
@@ -27,7 +27,7 @@ class HeaderSessionMiddleware(IsApiRequest):
 
         response = self._get_response(request)
 
-        if type(response) is HttpResponse:
+        if type(response) is Response:
             if self.is_api_request(request) and response.user.is_anonymous:
                 # получаем Set-Cookie (установленную в SessionMiddleware)
                 # и значение sessionid
@@ -48,7 +48,7 @@ class SetUserResponseMiddleware(IsApiRequest):
 
     def __call__(self, request):
         response = self._get_response(request)
-        if self.is_api_request(request) and type(response) is HttpResponse:
+        if self.is_api_request(request) and type(response) is Response:
             response.user = request.user
             return response
         return response
